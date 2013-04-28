@@ -1,0 +1,78 @@
+
+<!-- saved from url=(0036)http://www.zincland.com/hypocycloid/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Hypocycloid Gear Reduction</title>
+<script>window["_GOOG_TRANS_EXT_VER"] = "1";</script></head>
+
+<body>
+
+<h1>Hypocycloid Gear Reduction</h1>
+
+<h2>The reason:</h2>
+<p>In my quest to create new and interesting uses for my CNC mill, I found a link to <a href="http://www.darali.com/page17.html">Darali Drives</a>.  The link came courtesy of a thread on <a href="http://www.cnczone.com/forums/showthread.php?t=72261">CNCzone</a> and inspired me to devote a few weekends to creating a hypocycloidal reduction drive (also know as a cycloidal speed reducer).  The main reason I was draw to this approach to speed reduction was the apparent machinablity of the parts with only a 3 axis mill.  The profile of the cams allows the use of relatively large (0.125" in my case) endmills and does not require the internal shaping a gear does.  The other attributes of the drive are also attractive, with zero backlash and high shock loading being some of the key features.  I don't expect to get zero backlash on my first attempt :)
+
+</p><h2>Circles within Circles:</h2>
+<p>See the <a href="http://en.wikipedia.org/wiki/Hypocycloid">Hypocycloid</a> at Wikipedia for details of what a hypocyloid is.  If you have ever played with a Spirograph, you have seen a hypocycloid.  Now the problem with the hypocycloidal form used in this drive is that it can't be drawn using simple geometry in a CAD program.  I did try in Autocad and got quite close, but the resulting form had many sticky spots and was very difficult to modify. As a result, I decided to create a script to generate the profile automatically.
+
+</p><h2>Math:</h2>
+<p>Some research and another check on the <a href="http://www.cnczone.com/forums/showthread.php?t=72261">thread</a> at CNCzone brought up a <a href="http://www.cnczone.com/forums/showthread.php?p=593998#poststop">post by aystarik</a>. The linked <a href="http://gears.ru/transmis/zaprogramata/2.139.pdf">pdf</a> was most informative as it contained the mathematical formula describing the hypocycloid cam. The Russian was translated using Google to understand the terms.  The reason the formula is more complex than the Wikipedia entry is to allow the offset cause by the outer rollers having a finite diameter.  See the attached script for the math.
+</p><p>Further research led to the a <a href="http://imtuoradea.ro/auo.fmte/files-2007/MECATRONICA_files/Anamaria_Dascalescu_1.pdf">paper</a> by Anamaria Dascalescu on how to determine the optimal relief location on the cam.  The math from this paper has been integrated into v0.2 of  the script.  This allows the cam profile to be set back when the pressure angle is greater than a set amount (50 degrees is recommended).
+
+</p><h2>.dxf Generator Script</h2>
+<p>To create a machinable profile, I needed to create a .dxf of the above formula. Since I am not familiar with AutoLisp I decided to use Python as I have a passing familiarity with it. Python is also cross platform and the script (should) be able to be used on any OS and the .dxf files used in any CAD/CAM program.  After finding the <a href="http://www.kellbot.com/sdxf-python-library-for-dxf/">.dxf library</a> for Python, it was easy to generate the correct profile. Note that the script was written for Python 2.6 and I have had reports of it not working on 3.0.  If you want to create your own profile, get the script <b><a href="http://www.zincland.com/hypocycloid/hypocycloid.zip">here</a></b>.  It is fairly self explanatory and generates output files like this:
+</p><p><a href="http://www.zincland.com/hypocycloid/cam_10l.dxf"><img src="./Hypocycloid Gear Reduction_files/dxf_example.GIF"></a><br>
+<i>Click for actual .dxf file</i>
+</p><p>
+</p><ul>
+<li>The red line is the hypocycloidal cam
+</li><li>The blue circles are the roller pins
+</li><li>The yellow text lines are the parameters used to generate the cam
+</li><li>The green circles denote the pressure angle limits, the pins on the outer ring only contact the cam between the green circles.
+</li></ul>
+Note that the script generates one more roller pin that cam lobes.  This leads to a reduction ratio of N:1 where N is the number of lobes on the cam.  For the drawing above, there are 10 lobes on the cam and 11 pins.
+
+<h2>Building a dual stage 100:1 reducer</h2>
+Once the script was created, I decided that a single stage reducer was too simple and not challenging enough to build :)  So I designed the dual stage reducer below:<br>
+<img src="./Hypocycloid Gear Reduction_files/3d_view.GIF"><br>
+<ul>
+<li>The magenta part at the left is the outer housing of the reducer and contains the 11 pins of the first stage.
+</li><li>Green parts are the bearings (roller skate bearings if you must know)
+</li><li>Red parts are the cams, a 10 lobe primary on the left and a 9 lobe secondary on the right
+</li><li>The blue part on the right is the output stage and the 10 pins are hidden
+</li><li>Cyan screws and the white retaining ring round out the design
+</li><li>Not shown is the eccentric shaft that drives the primary and secondary cams.  I did not get around to drawing it.
+</li></ul>
+There are two 10:1 reduction stages leating to a 100:1 overall reduction ratio.
+
+<h2>Video of reducer running with a 2000rpm input from a drill</h2>
+<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/Ye8NtIZkixI&amp;hl=en&amp;fs=1"><param name="allowFullScreen" value="true"><param name="allowscriptaccess" value="always"><embed src="http://www.youtube.com/v/Ye8NtIZkixI&amp;hl=en&amp;fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></object><br>
+I am holding the output in the reducer with my finger as I didn't get to making the retaining ring.  The input shaft is easily turned by hand and the output can't be stopped by hand.  All in all, a good result.
+
+<h2>Pictures of the machined parts:</h2>
+<p>All parts were machined from Delrin on my Taig mill.  A 0.250" cutter was used for roughing and a 0.125" cutter was used to finish the cam profiles.  The cams were cut 0.001" undersize to stay away from a press fit, but I believe that I could get away with cutting them on size in the next version.  There is a very small amount of backlash in the output stage due to this (I believe).  I have not measured it, but it seems to be less than a degree by eye.
+
+</p><p>The housing:<br>
+<img src="./Hypocycloid Gear Reduction_files/Housing.JPG">
+</p><p>The eccentric shaft:<br>
+<img src="./Hypocycloid Gear Reduction_files/Shaft.JPG">
+</p><p>Top view of the cam showing the 10 lobe side:<br>
+<img src="./Hypocycloid Gear Reduction_files/Cam_top.JPG">
+</p><p>Bottom view of the cam showing the 9 lobe side:<br>
+<img src="./Hypocycloid Gear Reduction_files/Cam_bottom.JPG">
+</p><p>Output drive:<br>
+<img src="./Hypocycloid Gear Reduction_files/Output.JPG">
+</p><p>Cam in the housing:<br>
+<img src="./Hypocycloid Gear Reduction_files/Assembly1.JPG">
+
+<script src="./Hypocycloid Gear Reduction_files/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-250576-1";
+urchinTracker();
+</script>
+
+
+
+
+
+</p></body></html>

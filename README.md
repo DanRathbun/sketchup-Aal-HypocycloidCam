@@ -3,6 +3,7 @@
 
 __SketchUp Plugin to Generate 2D profiles of Hypocycloid Cams for Cycloid Reduction Drives.__
 
+![](Aal_HypocycloidCam/python/Hypocycloid%20Gear%20Reduction_files/dxf_example.GIF)
 
   **Credits** :
 
